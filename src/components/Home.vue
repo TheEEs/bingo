@@ -41,8 +41,7 @@ import { subscribe, subscribe_rooms, unsubscribe_rooms } from "@/store";
 import Noty from "noty";
 import roomList from "@/components/UI/list";
 export default {
-  mounted() {
-  },
+  mounted() {},
   data: function() {
     return {
       room_name: "",
@@ -87,6 +86,9 @@ export default {
   },
   computed: {
     ...mapGetters(["rooms"])
+  },
+  beforeRouteEnter(to, from, next) {
+    next();
   },
   created() {
     client.event.subscribe("rooms/changes", data => {});

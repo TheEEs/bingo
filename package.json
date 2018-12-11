@@ -18,15 +18,16 @@
     "animate.css": "^3.7.0",
     "typed.js": "^2.0.9",
     "noty":"^3.2.0-beta",
+    "uuid":"^3.3.2",
     "vue-pose": "^0.5.0",
     "ChuckCSS": "^3.2.3",
+    "detect-browser": "^3.0.1",
     "jquery": "^3.3.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
     "deepstream.io-client-js": "^2.3.0",
-    "lodash": "^4.17.11",
-    "micromodal": "^0.3.2"
+    "lodash": "^4.17.11"
   },
   "devDependencies": {
     "deepstream.io": "^3.1.2",

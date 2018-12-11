@@ -114,7 +114,7 @@ export default {
           { number: this.formated_room[y][x] }
         );
         this.check_line(x, y);
-        if (this.total_line == WINNING_TARGET)
+        if (this.total_line >= WINNING_TARGET)
           client.event.emit(`winning_the_game/${this.$store.state.room_id}`, {
             player_id: this.$store.state.user_id
           });
@@ -161,7 +161,7 @@ export default {
           if ((x = this.formated_room[y].indexOf(data.number)) > -1) {
             Vue.set(this.grid[y], x, true);
             this.check_line(x, y);
-            if (this.total_line == WINNING_TARGET)
+            if (this.total_line >= WINNING_TARGET)
               client.event.emit(
                 `winning_the_game/${this.$store.state.room_id}`,
                 {

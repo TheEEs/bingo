@@ -1,13 +1,5 @@
 <template>
     <div>
-        <!--h1>Player1 : {{players.player1}}</h1>
-        <hr>
-        <h1>Player2 : {{players.player2}}</h1>
-        <button @click="get_out">Get out</button>
-
-        <hr>
-                <button @click="play">Play</button>
-        <Sketch /-->
         <transition name='loading' mode='out-in' enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
           <template v-if='!can_play'>
             <div>
@@ -58,22 +50,22 @@ export default {
       }
     });
     this.unsubscribe_joining();
-    client.event.subscribe(`join/${this.$store.state.room_id}`, data => {
-      if (data.player_id != this.$store.state.user_id)
-        new Noty({
-          type: "warning",
-          text: `Người chơi <b style='color:#2c3e50'>${
-            data.player_id
-          }</b> đã tham gia`,
-          timeout: 900
-        }).show();
-    });
+    /*client.event.subscribe(`join/${this.$store.state.room_id}`, data => {
+
+      new Noty({
+        type: "warning",
+        text: `Người chơi <b style='color:#2c3e50'>${
+          data.player_id
+        }</b> đã tham gia`,
+        timeout: 900
+      }).show();
+    });*/
   },
   destroyed() {
-    this.unsubscribe_joining();
+    //this.unsubscribe_joining();
   },
   beforeRouteLeave(to, from, next) {
-    this.unsubscribe_joining();
+    //this.unsubscribe_joining();
     next();
   },
   mounted() {
@@ -89,8 +81,7 @@ export default {
         fadeOut: true,
         loop: true
       });
-    } catch(e) {
-    }
+    } catch (e) {}
   },
   computed: {
     ...mapGetters(["players", "can_play", "other_player"])

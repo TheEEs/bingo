@@ -17,25 +17,34 @@
 </template>
 <style scoped>
 @import url("https://fonts.googleapis.com/css?family=Montserrat|Nunito");
-h6{
+h6 {
   text-align: center;
-  font-family: 'Montserrat',sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 </style>
 <script>
-import { client } from "@/deepstream.js";
+import { client, user_uuid } from "@/deepstream.js";
 import { mapGetters } from "vuex";
+const { detect } = require("detect-browser");
+import $ from "jquery";
+
 export default {
   name: "App",
   created() {
-    window.onbeforeunload = e => {
+    const browser = detect();
+    const os_name = browser.os;
+    const event_name =
+      os_name == "iOS" || os_name == "Android OS" ? "pagehide" : "beforeunload";
+    client.presence.unsubscribe();
+    window.addEventListener(event_name, e => {
       this.$store.dispatch("get_out");
       client.event.unsubscribe();
-    };
+      client.presence.unsubscribe();
+    });
   },
   methods: {
-    has_no_room(){
-      return this.$store.state.rooms.length == 0
+    has_no_room() {
+      return this.$store.state.rooms.length == 0;
     }
   }
 };

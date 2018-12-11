@@ -2,14 +2,13 @@ import Vuex from 'vuex'
 import Vue from 'vue'
 import router from '@/router'
 Vue.use(Vuex)
-import { client } from '@/deepstream'
-import _ from 'lodash'
+import { client, username } from '@/deepstream'
 const room_lists = client.record.getList('lists/rooms')
 const store = new Vuex.Store({
     state: {
         room_name: "",
         room_id: "",
-        user_id: client.getUid(),
+        user_id: username,
         player1: "",
         player2: "",
         rooms: [],
@@ -107,8 +106,32 @@ const store = new Vuex.Store({
             room.on('delete', () => {
                 room_lists.removeEntry(context.state.room_id)
                 context.commit("erease_room_data") //delete room id , room name , players's information
+                localStorage['room_name'] = null
                 router.push({ name: "Home" })
             })
+            client.event.subscribe(`join/${context.state.room_id}`, data => {
+                if (!context.state.playing && !context.state.other_playing) {
+                    client.presence.subscribe(data.player_id, (username, logged_out) => {
+                        if (logged_out) {
+                            if (context.state.playing && context.state.other_playing) {
+                                alert('LOL')
+                                client.event.emit(`winning_the_game/${context.state.room_id}`, { player_id: context.getters.other_player })
+                                client.event.emit(`play/${context.state.room_id}`, {
+                                    user_id: context.state.user_id, status: false
+                                })
+                            }
+                        }
+                    })
+                }
+                new Noty({
+                    type: "warning",
+                    text: `Người chơi <b style='color:#2c3e50'>${
+                        data.player_id
+                        }</b> đã tham gia`,
+                    timeout: 900
+                }).show();
+            });
+            localStorage['room_name'] = room_id;
             router.push({ name: 'Waiting' })
         },
         join_room(context, room_id) {
@@ -133,11 +156,35 @@ const store = new Vuex.Store({
                 room.on('delete', () => {
                     room_lists.removeEntry(room_id)
                     context.commit("erease_room_data") //delete room id , room name , players's information
+                    localStorage['room_name'] = null
                     router.push({ name: "Home" })
                 })
                 room_lists.removeEntry(room_id)
+                localStorage['room_name'] = room_id
                 router.push({ name: "Waiting" })
                 client.event.emit(`join/${room_id}`, { player_id: context.state.user_id })
+                client.event.subscribe(`join/${context.state.room_id}`, data => {
+                    if (!(context.state.playing && context.state.other_playing)) {
+                        client.presence.subscribe(data.player_id, (username, logged_out) => {
+                            if (logged_out) {
+                                if (context.state.playing && context.state.other_playing) {
+                                    alert('LOL')
+                                    client.event.emit(`winning_the_game/${context.state.room_id}`, { player_id: context.getters.other_player })
+                                    client.event.emit(`play/${context.state.room_id}`, {
+                                        user_id: context.state.user_id, status: false
+                                    })
+                                }
+                            }
+                        })
+                    }
+                    new Noty({
+                        type: "warning",
+                        text: `Người chơi <b style='color:#2c3e50'>${
+                            data.player_id
+                            }</b> đã tham gia`,
+                        timeout: 900
+                    }).show();
+                });
             })
         },
         delete_room(context) {
@@ -163,17 +210,17 @@ const store = new Vuex.Store({
                 const player2 = room.get('player2')
                 room.set('player1', player2)
                 room.set('player2', "")
-                room_lists.addEntry(context.state.room_id)
+                //room_lists.addEntry(context.state.room_id)
                 context.commit('erease_room_data')
                 router.push('/')
             }
             else if (context.state.player2 == context.state.user_id) {
                 room.set('player2', "")
-                room_lists.addEntry(context.state.room_id)
+                //room_lists.addEntry(context.state.room_id)
                 context.commit("erease_room_data")
                 router.push('/')
             }
-            //client.event.emit(`join/${room_id}`, { player_id: ""})
+            client.event.unsubscribe(`join/${this.$store.state.room_id}`);
         }
     }
 })

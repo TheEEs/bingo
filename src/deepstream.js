@@ -4,13 +4,13 @@ const username = uuidv4();
 const client = ds.login({
     username: username
 })
-/*const room_name = localStorage['room_name']
+const room_name = localStorage['room_name']
 if (room_name) {
     const room = client.record.getRecord(room_name)
     room.whenReady(record => {
         record.delete()
     })
-}*/
+}
 export { client ,username }
 
 client.on('error', () => {

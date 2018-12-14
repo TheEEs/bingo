@@ -4,6 +4,7 @@ import Home from '@/components/Home'
 import Waiting from '@/components/Waiting'
 import store from '@/store'
 import playerBoard from '@/components/player_board'
+import { client } from '@/deepstream'
 Vue.use(Router)
 const router = new Router({
   routes: [
@@ -16,6 +17,7 @@ const router = new Router({
           next('/waiting')
           return
         }
+        client.presence.unsubscribe();
         next()
       }
     },
@@ -45,4 +47,5 @@ router.beforeEach((to, from, next) => {
   }
   else next();
 })
+
 export default router

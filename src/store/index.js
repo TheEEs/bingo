@@ -109,28 +109,6 @@ const store = new Vuex.Store({
                 localStorage['room_name'] = null
                 router.push({ name: "Home" })
             })
-            client.event.subscribe(`join/${context.state.room_id}`, data => {
-                if (!context.state.playing && !context.state.other_playing) {
-                    client.presence.subscribe(data.player_id, (username, logged_out) => {
-                        if (logged_out) {
-                            if (context.state.playing && context.state.other_playing) {
-                                alert('LOL')
-                                client.event.emit(`winning_the_game/${context.state.room_id}`, { player_id: context.getters.other_player })
-                                client.event.emit(`play/${context.state.room_id}`, {
-                                    user_id: context.state.user_id, status: false
-                                })
-                            }
-                        }
-                    })
-                }
-                new Noty({
-                    type: "warning",
-                    text: `Người chơi <b style='color:#2c3e50'>${
-                        data.player_id
-                        }</b> đã tham gia`,
-                    timeout: 900
-                }).show();
-            });
             localStorage['room_name'] = room_id;
             router.push({ name: 'Waiting' })
         },
@@ -160,31 +138,9 @@ const store = new Vuex.Store({
                     router.push({ name: "Home" })
                 })
                 room_lists.removeEntry(room_id)
-                localStorage['room_name'] = room_id
+                //localStorage['room_name'] = room_id
                 router.push({ name: "Waiting" })
                 client.event.emit(`join/${room_id}`, { player_id: context.state.user_id })
-                client.event.subscribe(`join/${context.state.room_id}`, data => {
-                    if (!(context.state.playing && context.state.other_playing)) {
-                        client.presence.subscribe(data.player_id, (username, logged_out) => {
-                            if (logged_out) {
-                                if (context.state.playing && context.state.other_playing) {
-                                    alert('LOL')
-                                    client.event.emit(`winning_the_game/${context.state.room_id}`, { player_id: context.getters.other_player })
-                                    client.event.emit(`play/${context.state.room_id}`, {
-                                        user_id: context.state.user_id, status: false
-                                    })
-                                }
-                            }
-                        })
-                    }
-                    new Noty({
-                        type: "warning",
-                        text: `Người chơi <b style='color:#2c3e50'>${
-                            data.player_id
-                            }</b> đã tham gia`,
-                        timeout: 900
-                    }).show();
-                });
             })
         },
         delete_room(context) {
@@ -210,17 +166,17 @@ const store = new Vuex.Store({
                 const player2 = room.get('player2')
                 room.set('player1', player2)
                 room.set('player2', "")
-                //room_lists.addEntry(context.state.room_id)
+                room_lists.addEntry(context.state.room_id)
                 context.commit('erease_room_data')
                 router.push('/')
             }
             else if (context.state.player2 == context.state.user_id) {
                 room.set('player2', "")
-                //room_lists.addEntry(context.state.room_id)
+                room_lists.addEntry(context.state.room_id)
                 context.commit("erease_room_data")
                 router.push('/')
             }
-            client.event.unsubscribe(`join/${this.$store.state.room_id}`);
+            client.event.unsubscribe(`join/${context.state.room_id}`);
         }
     }
 })
